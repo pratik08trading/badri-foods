@@ -1,0 +1,32 @@
+{% extends 'products/base.html' %}
+{% block content %}
+<section style="max-width:700px; margin:40px auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+    <h2 style="text-align:center; color:#2a572a;">✏️ Edit Product</h2>
+    <form method="POST" enctype="multipart/form-data" style="display:flex; flex-direction:column; gap:15px;">
+        {% csrf_token %}
+        <label>Product Name:</label>
+        <input type="text" name="name" value="{{ product.name }}" required>
+
+        <label>Description:</label>
+        <textarea name="description" rows="4" required>{{ product.description }}</textarea>
+
+        <label>Price (₹):</label>
+        <input type="number" name="price" step="0.01" value="{{ product.price }}" required>
+
+        <label>Category:</label>
+        <select name="category" required>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if product.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Product Image:</label>
+        {% if product.image %}
+            <img src="{{ product.image.url }}" width="100" style="border-radius:8px; margin-bottom:10px;">
+        {% endif %}
+        <input type="file" name="image" accept="image/*">
+
+        <button type="submit" style="background:#4CAF50; color:white; padding:10px; border:none; border-radius:8px; font-weight:600; cursor:pointer;">💾 Update Product</button>
+    </form>
+</section>
+{% endblock %}

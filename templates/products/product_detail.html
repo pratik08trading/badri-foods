@@ -1,0 +1,37 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block content %}
+<section style="padding: 50px; text-align: center;">
+    <div style="max-width: 700px; margin: auto; border: 1px solid #ddd; border-radius: 10px; padding: 30px;">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%; border-radius:10px;">
+        {% endif %}
+        <h2 style="margin-top:20px;">{{ product.name }}</h2>
+        <p style="color:#555;">{{ product.description }}</p>
+        <p style="font-size:1.2em;"><strong>₹{{ product.price }}</strong></p>
+
+        <button onclick="addToCart({{ product.id }})"
+                style="background-color:#6abf69; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">
+            Add to Cart
+        </button>
+
+        <button onclick="window.history.back()"
+                style="background-color:#ccc; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; margin-left:10px;">
+            Back
+        </button>
+    </div>
+</section>
+
+<script>
+function addToCart(productId) {
+    fetch(`/add-to-cart/${productId}/`)
+      .then(response => response.json())
+      .then(data => {
+          document.getElementById('cart-count').innerText = data.cart_count;
+          alert("Added to cart!");
+      })
+      .catch(err => alert("Error adding to cart."));
+}
+</script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'products/base.html' %}
+{% block content %}
+<section style="display:flex; justify-content:center; align-items:center; min-height:80vh;">
+  <div style="background:#fff; padding:40px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1); width:350px;">
+    <h2 style="text-align:center; color:#2a572a; margin-bottom:25px;">Admin Login</h2>
+    <form method="POST" style="display:flex; flex-direction:column; gap:15px;">
+      {% csrf_token %}
+      <input type="text" name="username" placeholder="Admin Username" required
+             style="padding:12px; border:1px solid #ccc; border-radius:8px; font-size:15px;">
+      <input type="password" name="password" placeholder="Password" required
+             style="padding:12px; border:1px solid #ccc; border-radius:8px; font-size:15px;">
+      <button type="submit"
+              style="background:linear-gradient(90deg, #FFB085, #58C5D2); color:white; font-weight:600; border:none; border-radius:8px; padding:12px; cursor:pointer; transition:0.3s;">
+        Login
+      </button>
+    </form>
+    <p style="color:red; text-align:center;">{% for message in messages %}{{ message }}{% endfor %}</p>
+  </div>
+</section>
+{% endblock %}

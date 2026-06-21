@@ -1,0 +1,165 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section style="
+    background: linear-gradient(120deg, #FFD6A5, #A5F3FC);
+    color: #2A2A2A;
+    text-align: center;
+    padding: 100px 20px;
+    border-radius: 0 0 40px 40px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+">
+    <h1 style="font-size: 3rem; margin-bottom: 10px; font-weight: 700;">Badri’s Foods</h1>
+    <h3 style="font-weight: 400;">Dehydrated Food — You Take Care, We Preserve Nature</h3>
+    <a href="{% url 'category' category_name='Aayurveda' %}" 
+       style="display:inline-block; margin-top:25px; background:#FF9966; color:white; 
+              padding:12px 25px; border-radius:10px; text-decoration:none; font-weight:600;
+              box-shadow:0 4px 10px rgba(0,0,0,0.1); transition:0.3s;">
+        Explore Products
+    </a>
+</section>
+
+<!-- Dynamic Info Slider -->
+<section id="info-slider" style="padding:60px 20px; text-align:center; position:relative; overflow:hidden; transition:background 1.5s ease-in-out;">
+    <div class="slider-container" style="max-width:900px; margin:auto; position:relative;">
+        <div class="slide active" data-bg="linear-gradient(120deg, #FFECD2, #FCB69F)">
+            <h2>What is Dehydrated Food?</h2>
+            <p>Dehydration removes moisture from food while retaining nutrients, extending shelf life naturally.</p>
+        </div>
+        <div class="slide" data-bg="linear-gradient(120deg, #A1C4FD, #C2E9FB)">
+            <h2>How We Prepare</h2>
+            <p>All our products are made in hygienic environments using advanced dehydration technology to lock in freshness and flavor.</p>
+        </div>
+        <div class="slide" data-bg="linear-gradient(120deg, #FBC2EB, #A6C1EE)">
+            <h2>Why Choose Dehydration?</h2>
+            <p>Because it’s healthy, eco-friendly, and preserves 90% of the nutrients. Perfect for modern lifestyles.</p>
+        </div>
+
+        <!-- Dots -->
+        <div class="slider-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery -->
+<section style="padding:60px 20px; background:linear-gradient(120deg, #FFF1E6, #E0F7FA); text-align:center;">
+    <h2 style="color:#2A2A2A; margin-bottom:30px;">Explore Our Products</h2>
+
+    {% if products %}
+        <div style="display:flex; justify-content:center; gap:25px; flex-wrap:wrap;">
+            {% for product in products %}
+            <div style="background:#fff; border-radius:15px; padding:15px; box-shadow:0 3px 10px rgba(0,0,0,0.08); width:260px; transition:transform 0.3s;">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%; height:200px; object-fit:cover; border-radius:10px;">
+                {% else %}
+                    <img src="{% static 'images/placeholder.jpg' %}" alt="No Image" style="width:100%; height:200px; object-fit:cover; border-radius:10px;">
+                {% endif %}
+                <h4 style="margin-top:10px; font-weight:600; color:#333;">{{ product.name }}</h4>
+                <p style="color:#777; font-size:0.95rem;">{{ product.category.name }}</p>
+                <p style="color:#4CAF50; font-weight:bold;">₹{{ product.price }}</p>
+                <a href="{% url 'product_detail' product.id %}" 
+                   style="display:inline-block; margin-top:8px; background:linear-gradient(90deg, #FFB085, #A0E7E5); color:#222;
+                          padding:8px 16px; border-radius:8px; text-decoration:none; font-weight:600;">
+                    View Details
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color:#555; font-size:1.1rem;">No products available yet. Please check back soon!</p>
+    {% endif %}
+</section>
+
+<script>
+const slides = document.querySelectorAll('#info-slider .slide');
+const dots = document.querySelectorAll('#info-slider .dot');
+const sliderSection = document.getElementById('info-slider');
+let current = 0;
+
+function showSlide(index) {
+    slides.forEach((slide, i) => {
+        slide.classList.remove('active', 'slide-in');
+        dots[i].classList.remove('active');
+        if (i === index) {
+            slide.classList.add('active', 'slide-in');
+            dots[i].classList.add('active');
+            sliderSection.style.background = slide.dataset.bg;
+        }
+    });
+
+    // Add zoom animation
+    sliderSection.classList.remove('zoom');
+    void sliderSection.offsetWidth; // trigger reflow for restart
+    sliderSection.classList.add('zoom');
+}
+
+function nextSlide() {
+    current = (current + 1) % slides.length;
+    showSlide(current);
+}
+
+setInterval(nextSlide, 4500);
+
+dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+        current = index;
+        showSlide(current);
+    });
+});
+</script>
+
+<style>
+#info-slider {
+    min-height: 300px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: transform 1.5s ease-in-out;
+}
+#info-slider.zoom {
+    transform: scale(1.03);
+}
+#info-slider .slide {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 1.2s ease-in-out;
+}
+#info-slider .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    position: relative;
+}
+#info-slider h2 {
+    font-size: 2rem;
+    color: #2A2A2A;
+    margin-bottom: 10px;
+}
+#info-slider p {
+    color: #444;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+.slider-dots {
+    margin-top: 25px;
+}
+#info-slider .dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin: 0 6px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+#info-slider .dot.active {
+    background: #FF9966;
+}
+</style>
+{% endblock %}

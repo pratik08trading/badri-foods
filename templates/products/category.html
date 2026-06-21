@@ -1,0 +1,66 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="category-section" style="text-align:center; padding:40px;">
+    <h1>{{ category.name }}</h1>
+    <p>{{ category.description }}</p>
+
+    <div class="products-grid" style="display:flex; flex-wrap:wrap; justify-content:center; gap:20px;">
+        {% for product in products %}
+        <div style="border:1px solid #ddd; border-radius:10px; padding:15px; width:220px;">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%; border-radius:10px;">
+            {% endif %}
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.description|truncatechars:80 }}</p>
+            <p><strong>₹{{ product.price }}</strong></p>
+
+            <button onclick="viewDetails({{ product.id }})"
+                    style="background-color:#b9d7bf; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">
+                View Details
+            </button>
+            <button onclick="addToCart({{ product.id }})"
+                    style="background-color:#6abf69; border:none; padding:6px 12px; border-radius:5px; color:white; cursor:pointer;">
+                Add to Cart
+            </button>
+        </div>
+        {% empty %}
+        <p>No products available in this category yet.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+function addToCart(productId) {
+    // Grab the counter first
+    const counter = document.getElementById('cart-count');
+    const currentCount = parseInt(counter.innerText) || 0;
+
+    // Update visually first for instant feedback 🧠
+    counter.innerText = currentCount + 1;
+
+    // Fire async request in background
+    fetch(`/add-to-cart/${productId}/`, {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.error("❌ Server returned:", response.status);
+            // Revert count if server failed
+            counter.innerText = currentCount;
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Sync real value with server response
+        counter.innerText = data.cart_count;
+    })
+    .catch(error => {
+        console.error("❌ Network or backend error:", error);
+        counter.innerText = currentCount; // rollback if failed
+    });
+}
+</script>
+{% endblock %}

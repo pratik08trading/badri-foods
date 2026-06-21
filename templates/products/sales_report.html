@@ -1,0 +1,97 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block content %}
+<section style="padding:40px;">
+  <h1 style="color:#2a572a; text-align:center;">📊 Sales Report</h1>
+  <p style="text-align:center; color:#555; font-size:1.1rem; margin-bottom:30px;">
+    Visual insights into total revenue by category and top-selling products.
+  </p>
+  <hr>
+
+  <!-- Category Revenue Chart -->
+  <div style="margin-top:40px; text-align:center;">
+      <h3 style="margin-bottom:20px;">Revenue by Category</h3>
+      <canvas id="categoryChart" height="280"></canvas>
+  </div>
+
+  <!-- Product Revenue Chart -->
+  <div style="margin-top:60px; text-align:center;">
+      <h3 style="margin-bottom:20px;">Top 10 Products by Revenue</h3>
+      <canvas id="productChart" height="280"></canvas>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // === CATEGORY REVENUE CHART ===
+    const catLabels = [{% for c in category_sales %}'{{ c.product__category__name }}',{% endfor %}];
+    const catData = [{% for c in category_sales %}{{ c.total_revenue|default:0 }},{% endfor %}];
+
+    if (catLabels.length && catData.length) {
+        const ctx1 = document.getElementById('categoryChart').getContext('2d');
+        const gradient1 = ctx1.createLinearGradient(0, 0, 800, 0);
+        gradient1.addColorStop(0, '#FFB6B9');
+        gradient1.addColorStop(1, '#A0E7E5');
+
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: catLabels,
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: catData,
+                    borderRadius: 10,
+                    backgroundColor: gradient1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                scales: { x: { beginAtZero: true } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => `₹${ctx.raw.toLocaleString()}` } }
+                },
+                animation: { duration: 1500, easing: 'easeOutQuart' }
+            }
+        });
+    }
+
+    // === PRODUCT REVENUE CHART ===
+    const prodLabels = [{% for p in product_sales %}'{{ p.product__name }}',{% endfor %}];
+    const prodData = [{% for p in product_sales %}{{ p.total_revenue|default:0 }},{% endfor %}];
+
+    if (prodLabels.length && prodData.length) {
+        const ctx2 = document.getElementById('productChart').getContext('2d');
+        const gradient2 = ctx2.createLinearGradient(0, 0, 800, 0);
+        gradient2.addColorStop(0, '#9AD0EC');
+        gradient2.addColorStop(1, '#FFD6A5');
+
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: prodLabels,
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: prodData,
+                    borderRadius: 10,
+                    backgroundColor: gradient2
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                scales: { x: { beginAtZero: true } },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => `₹${ctx.raw.toLocaleString()}` } }
+                },
+                animation: { duration: 1500, easing: 'easeOutQuart' }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

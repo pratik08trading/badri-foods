@@ -1,0 +1,75 @@
+{% extends 'products/base.html' %}
+{% block content %}
+<section style="padding:50px 20px; background:linear-gradient(120deg, #FFF1E6, #E0F7FA); min-height:80vh;">
+  <h2 style="text-align:center; color:#2A2A2A; margin-bottom:30px;">Your Cart</h2>
+
+  {% if cart_items %}
+  <div style="max-width:900px; margin:auto; background:#fff; padding:30px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+    <table style="width:100%; border-collapse:collapse;">
+      <tr style="background:#f9f9f9;">
+        <th style="text-align:left; padding:10px;">Product</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th></th>
+      </tr>
+      {% for item in cart_items %}
+      <tr style="border-bottom:1px solid #eee;" id="row-{{ item.id }}">
+        <td style="padding:10px;">{{ item.product.name }}</td>
+        <td style="text-align:center;">
+          <button class="update-btn" data-action="decrease" data-id="{{ item.id }}" style="padding:3px 8px;">−</button>
+          <span id="qty-{{ item.id }}">{{ item.quantity }}</span>
+          <button class="update-btn" data-action="increase" data-id="{{ item.id }}" style="padding:3px 8px;">+</button>
+        </td>
+        <td style="text-align:center;">₹{{ item.product.price }}</td>
+        <td style="text-align:center;" id="item-total-{{ item.id }}">₹{{ item.total_price }}</td>
+        <td style="text-align:center;">
+          <button class="remove-btn" data-id="{{ item.id }}" style="background:none; border:none; color:#ff4d4d; font-weight:bold; cursor:pointer;">✖</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <div style="text-align:right; margin-top:20px;">
+      <h3>Total: ₹<span id="cart-total">{{ total }}</span></h3>
+      <a href="{% url 'checkout' %}" style="background:linear-gradient(90deg,#FFB085,#58C5D2); color:white; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:600;">Proceed to Checkout</a>
+    </div>
+  </div>
+  {% else %}
+    <p style="text-align:center; color:#555; font-size:1.2rem;">Your cart is empty.</p>
+  {% endif %}
+</section>
+
+<script>
+// --- Quantity update (+ / -)
+document.querySelectorAll('.update-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const itemId = btn.dataset.id;
+    const action = btn.dataset.action;
+
+    fetch(`/cart/update/${itemId}/${action}/`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById(`qty-${itemId}`).textContent = data.new_quantity;
+        document.getElementById(`item-total-${itemId}`).textContent = `₹${data.item_total}`;
+        document.getElementById('cart-total').textContent = data.cart_total;
+        document.getElementById('cart-count').textContent = data.cart_count;
+      });
+  });
+});
+
+// --- Remove item (❌)
+document.querySelectorAll('.remove-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const itemId = btn.dataset.id;
+    fetch(`/cart/remove/${itemId}/`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById(`row-${itemId}`).remove();
+        document.getElementById('cart-total').textContent = data.cart_total;
+        document.getElementById('cart-count').textContent = data.cart_count;
+      });
+  });
+});
+</script>
+{% endblock %}

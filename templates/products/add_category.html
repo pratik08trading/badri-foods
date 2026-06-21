@@ -1,0 +1,15 @@
+{% extends 'products/base.html' %}
+{% block content %}
+<section style="padding:40px;">
+    <h2>Add New Category</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label>Name:</label><br>
+        <input type="text" name="name" required><br><br>
+        <label>Description:</label><br>
+        <textarea name="description" rows="3"></textarea><br><br>
+        <button type="submit" style="background:#4CAF50; color:white; padding:10px 20px; border:none; border-radius:6px;">Add Category</button>
+    </form>
+    <p style="color:green;">{% for message in messages %}{{ message }}{% endfor %}</p>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'products/base.html' %}
+{% block content %}
+<section style="padding:40px;">
+    <h2>Add New Product</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Product Name:</label><br>
+        <input type="text" name="name" required><br><br>
+
+        <label>Description:</label><br>
+        <textarea name="description" rows="3" required></textarea><br><br>
+
+        <label>Price (₹):</label><br>
+        <input type="number" name="price" step="0.01" required><br><br>
+
+        <label>Category:</label><br>
+        <select name="category" required>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label>Product Image:</label><br>
+        <input type="file" name="image"><br><br>
+
+        <button type="submit" style="background:#2196F3; color:white; padding:10px 20px; border:none; border-radius:6px;">Add Product</button>
+    </form>
+    <p style="color:green;">{% for message in messages %}{{ message }}{% endfor %}</p>
+</section>
+{% endblock %}
