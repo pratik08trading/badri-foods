@@ -1,0 +1,1 @@
+web: gunicorn badris_foods.wsgi
